@@ -1,0 +1,30 @@
+[
+  {
+    "name": "Tosse",
+    "weight": 10
+  },
+  {
+    "name": "Febre",
+    "weight": 20
+  },
+  {
+    "name": "Cansaço",
+    "weight": 10
+  },
+  {
+    "name": "Dor de garganta",
+    "weight": 15
+  },
+  {
+    "name": "Vômito",
+    "weight": 10
+  },
+  {
+    "name": "Dificuldade de respirar/falta de ar",
+    "weight": 25
+  },
+  {
+    "name": "Coriza",
+    "weight": 10
+  }
+]
