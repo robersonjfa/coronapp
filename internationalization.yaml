@@ -1,0 +1,13 @@
+path: ./assets/i18n
+default_locale:
+  language: pt
+  country: BR
+locales:
+  - locale:
+      language: pt
+      country: BR
+  - locale:
+      language: en
+      country: US
+  - locale:
+      language: es

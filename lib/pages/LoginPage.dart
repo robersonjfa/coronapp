@@ -4,6 +4,7 @@ import 'package:coronapp/pages/HomePage.dart';
 import 'package:coronapp/pages/RegisterPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:internationalization/internationalization.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -66,7 +67,7 @@ class _LoginState extends State<Login> {
       },
       decoration: InputDecoration(
         contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-        hintText: 'Usuário',
+        hintText: Strings.of(context).valueOf("wg_email"),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32))
       ),
     );
@@ -76,11 +77,11 @@ class _LoginState extends State<Login> {
       style: style,
       onSaved: (valor) => _senha = valor,
       validator: (valor) {
-        return valor.length < 6 ? "Senha deve ter no mínimo 6 caracteres!" : null;
+        return valor.length < 6 ? Strings.of(context).valueOf("msg_password") : null;
       },
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          hintText: 'Senha',
+          hintText: Strings.of(context).valueOf("wg_password"),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(32))
       ),
     );
@@ -113,7 +114,7 @@ class _LoginState extends State<Login> {
               RaisedButton(
                 color: Colors.blue,
                 elevation: 5.0,
-                child: Text('Login', style: style),
+                child: Text(Strings.of(context).valueOf("wg_login"), style: style),
                 onPressed: _validarLogin
               ),
               SizedBox(height: 15,),
@@ -122,7 +123,7 @@ class _LoginState extends State<Login> {
                   context: context,
                   builder: (context) => RegisterForm()
                 ),
-                child: Text('Registre-se',
+                child: Text(Strings.of(context).valueOf("wg_register"),
                     style: TextStyle(fontSize: 25, color: Colors.orange)
                 )
               )

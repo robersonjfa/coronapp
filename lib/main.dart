@@ -3,9 +3,12 @@ import 'package:coronapp/pages/LoginPage.dart';
 import 'package:coronapp/pages/SplashPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:internationalization/internationalization.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Internationalization.loadConfigurations();
   // estamos fixando a posição de todas as telas da aplicação
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_)
     {
@@ -28,6 +31,12 @@ class CoronApp extends StatelessWidget {
         '/LoginPage': (BuildContext context) => LoginPage(),
         '/HomePage': (BuildContext context) => HomePage()
       },
+      supportedLocales: suportedLocales,
+      localizationsDelegates: [
+        Internationalization.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate
+      ],
     );
   }
 }

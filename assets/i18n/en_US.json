@@ -1,0 +1,7 @@
+{
+  "wg_email": "E-mail",
+  "wg_password": "Password",
+  "wg_login": "Login",
+  "wg_register": "Register",
+  "msg_password": "Password must have at least 6 characters!"
+}
