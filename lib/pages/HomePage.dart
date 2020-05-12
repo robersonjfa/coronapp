@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:io' show Platform;
 
 import 'package:coronapp/models/news.dart';
 import 'package:coronapp/models/symptom.dart';
@@ -8,6 +10,7 @@ import 'package:coronapp/widgets/circlecheckbox.dart';
 import 'package:coronapp/widgets/imagecheckbox.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -61,7 +64,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    this.getData();
+    Future.delayed(Duration(milliseconds: 100)).then((_) {
+      this.getData();
+    });
   }
 
   // retorna o body conforme o item de tela clicado
@@ -86,18 +91,41 @@ class _HomePageState extends State<HomePage> {
               itemCount: symptoms == null ? 0 : symptoms.length,
               itemBuilder: (BuildContext context, int index) {
               return new ImageCheckBox(
-                value: checks[index],
+                value: _check,
                 onChanged: (bool val) {
                   setState(() {
-                   if (val) total += symptoms[index].weight; // solução com variável
-                   else  total -= symptoms[index].weight;
-                   checks[index] = val; // solução então com list/vetor
+                    if (val) total += symptoms[index].weight;
+                    else total -= symptoms[index].weight;
                   });
                 },
                 checkDescription: '${symptoms[index].name}',
             );
           })),
-          RaisedButton(child: Text('Testar'), onPressed: null,)
+          RaisedButton(
+            child: Text('Testar'),
+            onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Resultado do Teste'),
+                    content: LinearProgressIndicator(value: total.toDouble() / 100,
+                      valueColor: total > 50 ?
+                    AlwaysStoppedAnimation(Colors.red) :
+                    AlwaysStoppedAnimation(Colors.green),),
+                    //Text('Resultado: $total', style: TextStyle(fontSize: 40, color: Colors.orange),),
+                    actions: <Widget>[
+                      new FlatButton(
+                        child: Text('Fechar'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }
+                      )
+                    ],
+                  );
+                }
+            );
+          },)
       ]);
       break;
       case 2: return Container(height: 500, color: Colors.yellow); break;
@@ -106,7 +134,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final bytes = base64.decode(widget.user.photo);
+
+    var bytes = null;
+    if (widget.user.photo != null)
+      bytes = base64.decode(widget.user.photo);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('CoronApp')
@@ -120,26 +152,25 @@ class _HomePageState extends State<HomePage> {
               currentAccountPicture: CircleAvatar(
                 radius: 30,
                 backgroundColor: Colors.transparent,
-                backgroundImage: MemoryImage(bytes),
+                backgroundImage: bytes != null ? MemoryImage(bytes) : AssetImage('assets/images/nophoto.png'),
                 //AssetImage('assets/images/splash.png'),
               ),
             ),
             ListTile(
-              title: Text('Item de menu 1'),
-              subtitle: Text('Subitem de menu 1'),
-              leading: Icon(Icons.stars),
+              title: Text('Configuração'),
+              leading: Icon(Icons.settings),
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
                 debugPrint('Clicou no menu 1');
               }
             ),
             ListTile(
-                title: Text('Item de menu 2'),
-                subtitle: Text('Subitem de menu 2'),
-                leading: Icon(Icons.account_circle),
-                trailing: Icon(Icons.arrow_forward),
+                title: Text('Sair'),
+                leading: Icon(Icons.close),
                 onTap: () {
-                  debugPrint('Clicou no menu 2');
+                  SystemNavigator.pop();
+                  // só executa se a plataforma for android
+                  if (Platform.isAndroid) exit(0);
                 }),
           ],
         )

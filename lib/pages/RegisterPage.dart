@@ -28,8 +28,12 @@ class _RegisterFormState extends State<RegisterForm> {
     if (form.validate()) {
       form.save();
 
-      final bytes = await _image.readAsBytes();
-      final photo = base64.encode(bytes);
+      var bytes = null;
+      var photo = null;
+      if (_image != null) {
+        bytes = await _image.readAsBytes();
+        photo = base64.encode(bytes);
+      }
 
       User user = User(null, _name, _email, _password, photo);
       // pq o erro? faltava o setter
@@ -70,7 +74,9 @@ class _RegisterFormState extends State<RegisterForm> {
     );
 
     if(imageSource != null) {
-      final file = await ImagePicker.pickImage(source: imageSource);
+      final file = await ImagePicker.pickImage(source: imageSource,
+          maxHeight: 400,
+          maxWidth: 300);
       if(file != null) {
         setState(() => _image = file);
       }

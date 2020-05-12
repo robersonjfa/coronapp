@@ -2,8 +2,17 @@ import 'package:coronapp/pages/HomePage.dart';
 import 'package:coronapp/pages/LoginPage.dart';
 import 'package:coronapp/pages/SplashPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-void main() => runApp(CoronApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  // estamos fixando a posição de todas as telas da aplicação
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_)
+    {
+      runApp(CoronApp());
+    }
+  );
+}
 
 class CoronApp extends StatelessWidget {
   @override

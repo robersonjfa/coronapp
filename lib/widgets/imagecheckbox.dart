@@ -40,6 +40,8 @@ class _ImageCheckBoxState extends State<ImageCheckBox> {
             setState(() {
               checkedIcon = !checkedIcon;
             });
+            // aciona o onchange customizado
+            widget.onChanged(checkedIcon);
           },
         ),
         SizedBox(width: 5),
