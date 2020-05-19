@@ -6,12 +6,14 @@ import 'package:coronapp/models/news.dart';
 import 'package:coronapp/models/symptom.dart';
 import 'package:coronapp/models/user.dart';
 import 'package:coronapp/utils/date_utils.dart';
-import 'package:coronapp/widgets/circlecheckbox.dart';
-import 'package:coronapp/widgets/imagecheckbox.dart';
+import 'package:coronapp/widgets/circle_checkbox.dart';
+import 'package:coronapp/widgets/image_checkbox.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
+import 'package:shared_preferences_settings/shared_preferences_settings.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -36,6 +38,35 @@ class _HomePageState extends State<HomePage> {
   List<News> news;
   var refreshNews = GlobalKey<RefreshIndicatorState>();
   List<Symptom> symptoms;
+
+
+  bool _serviceEnabled;
+  PermissionStatus _permissionGranted;
+  LocationData _locationData;
+
+  getLocation() async {
+    Location location = new Location();
+
+    // verifica se o serviço está ativo
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    // verificação da permissão
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    _locationData = await location.getLocation();
+  }
 
   Future<String> getData() async {
     refreshNews.currentState?.show(atTop: false); // mostra só quando fizer o swipe
@@ -67,6 +98,7 @@ class _HomePageState extends State<HomePage> {
     Future.delayed(Duration(milliseconds: 100)).then((_) {
       this.getData();
     });
+    getLocation();
   }
 
   // retorna o body conforme o item de tela clicado
@@ -86,6 +118,8 @@ class _HomePageState extends State<HomePage> {
       );
       case 1: return Column(children: <Widget>[
           Text('Teste Rápido de Sintomas'),
+          // TODO: usar a latitude e longitude para dizer o nome da cidade
+          Text('Localização: ${_locationData.latitude} / ${_locationData.longitude}'),
           Expanded(
               child: ListView.builder(
               itemCount: symptoms == null ? 0 : symptoms.length,
@@ -149,19 +183,24 @@ class _HomePageState extends State<HomePage> {
             UserAccountsDrawerHeader(
               accountName: Text(widget.user.name),
               accountEmail: Text(widget.user.email),
-              currentAccountPicture: CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.transparent,
-                backgroundImage: bytes != null ? MemoryImage(bytes) : AssetImage('assets/images/nophoto.png'),
-                //AssetImage('assets/images/splash.png'),
-              ),
+              currentAccountPicture: Settings().onBoolChanged(
+                settingKey: 'opc_show_photo',
+                defaultValue: true,
+                childBuilder: (BuildContext context, bool value){
+                  return value ? CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: bytes != null ? MemoryImage(bytes) : AssetImage('assets/images/nophoto.png'),
+                    //AssetImage('assets/images/splash.png'),
+                  ) : Text('');
+                },)
             ),
             ListTile(
               title: Text('Configuração'),
               leading: Icon(Icons.settings),
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
-                debugPrint('Clicou no menu 1');
+                Navigator.of(context).pushNamed('/SettingsPage');
               }
             ),
             ListTile(

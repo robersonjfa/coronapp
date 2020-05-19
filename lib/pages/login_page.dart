@@ -1,7 +1,7 @@
 import 'package:coronapp/helpers/database_helper.dart';
 import 'package:coronapp/models/user.dart';
-import 'package:coronapp/pages/HomePage.dart';
-import 'package:coronapp/pages/RegisterPage.dart';
+import 'package:coronapp/pages/home_page.dart';
+import 'package:coronapp/pages/register_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:internationalization/internationalization.dart';
